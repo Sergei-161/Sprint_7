@@ -48,6 +48,3 @@ class TestCourierDelete:
 
         # Проверяем статус кода и содержимое ответа
         assert delete_response.status_code == 500, f"Ожидался код 500, получен {delete_response.status_code}"
-
-
-
