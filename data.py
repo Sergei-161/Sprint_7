@@ -62,3 +62,9 @@ class TestOrderData:
         "comment": "Оо,мама мия..жду не дождусь!",
         "color": []
     }
+    all_orders = [
+        order_data_grey,
+        order_data_black,
+        order_data_two_colors,
+        order_data_no_colors
+    ]

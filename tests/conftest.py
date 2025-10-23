@@ -27,11 +27,17 @@ def new_courier():
         })
         courier_id = login_response.json()["id"]
 
-    return {
+    yield {
         'data': courier_data,
         'id': courier_id
     }
 
+    # После выполнения теста — удаляем курьера
+    with allure.step('Удаление курьера после теста'):
+        delete_response = requests.delete(f"{Urls.URL_courier_delete}/{courier_id}")
+        assert delete_response.status_code in [200, 202, 204,404], (
+            f"Ошибка при удалении курьера: {delete_response.text}"
+        )
 
 @pytest.fixture
 def new_order():
@@ -62,12 +68,7 @@ def courier_and_order(new_courier, new_order):
     }
 
 
-@pytest.fixture(params=[
-    TestOrderData.order_data_grey,
-    TestOrderData.order_data_black,
-    TestOrderData.order_data_two_colors,
-    TestOrderData.order_data_no_colors
-])
+@pytest.fixture(params=TestOrderData.all_orders)
 def order_data(request):
     """Фикстура для параметризации данных заказа"""
     return request.param
