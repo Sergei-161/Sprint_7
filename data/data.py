@@ -1,3 +1,8 @@
+class CourierTestData:
+    """Тестовые данные для операций с курьерами."""
+    NONEXISTENT_ID = "9999999999"
+    INVALID_ID = "invalid_id_123"
+
 class TestData:
     # Статические данные для тестов, где нужно использовать существующие учетки
     correct_login = "Alex2025"
@@ -68,3 +73,5 @@ class TestOrderData:
         order_data_two_colors,
         order_data_no_colors
     ]
+
+

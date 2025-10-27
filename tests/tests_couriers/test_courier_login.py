@@ -1,7 +1,7 @@
 import requests
 import allure
 import pytest
-from data import TestData as Data
+from data.data import TestData as Data
 from urls import Urls
 import helpers as h
 

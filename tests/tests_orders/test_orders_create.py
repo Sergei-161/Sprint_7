@@ -1,23 +1,24 @@
+import pytest
 import requests
 import allure
-import json
+from data.data import TestOrderData
 from urls import Urls
 
 
-class TestOrderCreate:
+@allure.title('Проверка создания заказа с разными параметрами цвета')
+@allure.description(
+    'Система должна позволять указать один, оба или ни одного цвета самоката. '
+    'Тест передает данные: серый, черный, оба цвета, без цвета. '
+    'Проверяется код и тело ответа.'
+)
+@pytest.mark.parametrize("order_data", TestOrderData.all_orders)
+def test_order_create_color_parametrize_success(order_data):
+    with allure.step('Отправка запроса на создание заказа'):
+        response = requests.post(Urls.URL_orders_create, json=order_data)
 
-    @allure.title('Проверка создания заказа с разными параметрами цвета')
-    @allure.description('Согласно требованиям, система должна позволять указать в заказе один цвет самоката, выбрать '
-                        'сразу оба или не указывать совсем. В тест по очереди передаются наборы данных с разными '
-                        'параметрами: серый, черный, оба цвета, цвет не указан. Проверяются код и тело ответа.')
-    def test_order_create_color_parametrize_success(self, order_data):
-        # Преобразование данных в JSON-формат для отправки
-        order_data_json = json.dumps(order_data)
-        # Установка заголовков для JSON-запроса
-        headers = {'Content-Type': 'application/json'}
+    with allure.step('Проверка кода ответа'):
+        assert response.status_code == 201, f"Неверный код ответа: {response.status_code}, тело: {response.text}"
 
-        with allure.step('Отправка POST запроса на создание заказа'):
-            response = requests.post(Urls.URL_orders_create, data=order_data_json, headers=headers, timeout=5)
-
-        # Проверка успешного создания заказа (код 201) и наличия track-номера
-        assert response.status_code == 201 and 'track' in response.text
+    with allure.step('Проверка наличия track в ответе'):
+        response_json = response.json()
+        assert "track" in response_json, "Ответ не содержит track номера"
