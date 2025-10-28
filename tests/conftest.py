@@ -28,13 +28,11 @@ def new_courier():
         courier_id = login_response.json().get("id")
         assert courier_id, "Не удалось получить ID курьера"
 
-    # Передаём данные в тест
     yield {
         'data': courier_data,
         'id': courier_id
     }
 
-    # Финализатор (гарантированное удаление)
     with allure.step('Удаление курьера после теста'):
         delete_response = requests.delete(f"{Urls.URL_courier_delete}/{courier_id}")
         assert delete_response.status_code in [200, 202, 204, 404], (
@@ -59,14 +57,10 @@ def new_order():
         order_id = get_response.json()['order']['id']
         assert order_id, "Не удалось получить ID заказа по track номеру"
 
-    # Передаём данные в тест
     yield {
         'track_id': track_id,
         'order_id': order_id
     }
-
-    # Финализатор (если в API есть эндпоинт удаления — добавить сюда)
-    # Если удаления нет, просто оставляем yield без post-step
 
 
 @pytest.fixture
@@ -76,20 +70,3 @@ def courier_and_order(new_courier, new_order):
         'courier': new_courier,
         'order': new_order
     }
-
-
-@allure.title('Проверка создания заказа с разными параметрами цвета')
-@allure.description(
-    'Согласно требованиям, система должна позволять указать один цвет самоката, '
-    'оба цвета или ни одного. Тест проверяет коды ответов и наличие track в ответе.'
-)
-@pytest.mark.parametrize("order_data", TestOrderData.all_orders)
-def test_create_order(order_data):
-    """Проверка успешного создания заказа с различными вариантами данных."""
-    with allure.step('Создание заказа с параметрами'):
-        response = requests.post(Urls.URL_orders_create, json=order_data)
-        assert response.status_code == 201, f"Ошибка при создании заказа: {response.text}"
-
-    with allure.step('Проверка наличия track в ответе'):
-        response_json = response.json()
-        assert "track" in response_json, "Ответ не содержит track номера"
